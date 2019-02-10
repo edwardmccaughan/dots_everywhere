@@ -1,6 +1,42 @@
 import { MidiController } from '../midi'
 import { RealKeyboard } from '../real_keyboard'
 
+class LinesManager {
+  constructor() {
+    this.lines = {}
+    this.start_ttl = 200
+  }
+
+  set_line_active(dot_a, dot_b) {
+    const keyname = [dot_a.key_number, dot_b.key_number].sort().toString()
+
+    this.lines[keyname] = {
+      dot_a: dot_a,
+      dot_b: dot_b,
+      ttl: this.start_ttl
+    }
+  }
+
+  update() {
+    Object.keys(this.lines).forEach((key) => { 
+      const line = this.lines[key]
+      if(line.ttl > 0){
+        window.scene.graphics.lineStyle(1, 0xffffff, 1 * (line.ttl / this.start_ttl));
+        window.scene.graphics.beginPath();
+        window.scene.graphics.moveTo(line.dot_a.physics_object.x, line.dot_a.physics_object.y);
+        window.scene.graphics.lineTo(line.dot_b.physics_object.x, line.dot_b.physics_object.y);
+        window.scene.graphics.closePath();
+        window.scene.graphics.strokePath();
+        
+        line.ttl--
+      }
+    })
+  }
+
+
+}
+
+
 class KeyDot {
   constructor(key_number, scene) {
     this.key_number = key_number
@@ -52,13 +88,7 @@ class KeyDot {
     // maybe a better way is to create a big list of pairs and then draw them all at the end
     // maybe then links could also have a fadeout
     this.sorted_dots.slice(1, 5).forEach((dot) =>{
-      window.scene.graphics.lineStyle(1, 0x222222, 1);
-
-      window.scene.graphics.beginPath();
-      window.scene.graphics.moveTo(this.physics_object.x, this.physics_object.y);
-      window.scene.graphics.lineTo(dot.physics_object.x, dot.physics_object.y);
-      window.scene.graphics.closePath();
-      window.scene.graphics.strokePath();
+      window.scene.lines_manager.set_line_active(this, dot)
     })
   }
 
@@ -80,8 +110,7 @@ export class SimpleScene extends Phaser.Scene {
     this.pressed_keys = []
     this.prefill_key_data()
 
-    
-
+    this.lines_manager = new LinesManager()
 
     new MidiController( (key) => { this.key_down(key) }, (key) => { this.key_up(key)} )
     new RealKeyboard( (key) => { this.key_down(key) }, (key) => { this.key_up(key)} )
@@ -90,8 +119,8 @@ export class SimpleScene extends Phaser.Scene {
   update() {
     this.graphics.clear()
     
+    this.lines_manager.update()
     this.key_data.forEach(key => key.update())
-
   }
 
 
