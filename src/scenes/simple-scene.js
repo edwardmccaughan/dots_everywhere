@@ -4,10 +4,6 @@ import { RealKeyboard } from '../real_keyboard'
 class KeyDot {
   constructor(key_number, scene) {
     this.key_number = key_number
-    // this.point = new Phaser.Math.Vector2(
-    //   Math.random() * window.innerWidth,
-    //   Math.random() * window.innerHeight)
-    //this.direction = Math.random() * 360
 
     this.radius = 4
 
@@ -29,45 +25,32 @@ class KeyDot {
   }
 
   update(){
-    // this.point.add(new Phaser.Math.Vector2(0,0).setToPolar(Phaser.Math.DegToRad(this.direction), this.speed))
-    
-
-    var t0 = performance.now();
     this.find_closest_neighbours()
-    var t1 = performance.now();
-    // console.log("Call tooko doSomething took " + (t1 - t0) + " milliseconds.")
-
     window.scene.graphics.fillStyle(0x00ffff, 1);
     window.scene.graphics.fillCircle(this.physics_object.x, this.physics_object.y, this.radius)
   }
 
-  link_within_radius() {
 
 
+  distance_to(other_dot){
+
+    return Phaser.Math.Distance.Squared(
+        this.physics_object.x,
+        this.physics_object.y, 
+        other_dot.physics_object.x,
+        other_dot.physics_object.y
+      )
   }
 
-
   find_closest_neighbours() {
-    var self = this
     this.sorted_dots = scene.key_data.slice().sort((dot_a, dot_b) => {
-      const dist_to_a = Phaser.Math.Distance.Squared(
-        self.physics_object.x,
-        self.physics_object.y, 
-        dot_a.physics_object.x,
-        dot_a.physics_object.y
-      )
-      const dist_to_b =  Phaser.Math.Distance.Squared(
-        self.physics_object.x,
-        self.physics_object.y, 
-        dot_b.physics_object.x,
-        dot_b.physics_object.y
-        )
-      // console.log(dist_to_a - dist_to_b)
-      return (dist_to_a - dist_to_b)
-      // return (dist_to_b - dist_to_a)
-      // return (this.key_number - dot_a.key_number) - (this.key_number - dot_b.key_number)
+      return this.distance_to(dot_a) - this.distance_to(dot_b)
     })
 
+    // this means we're drawing each line twice
+    // which also means we draw over the dot a bit
+    // maybe a better way is to create a big list of pairs and then draw them all at the end
+    // maybe then links could also have a fadeout
     this.sorted_dots.slice(1, 5).forEach((dot) =>{
       window.scene.graphics.lineStyle(1, 0x222222, 1);
 
@@ -109,28 +92,18 @@ export class SimpleScene extends Phaser.Scene {
     
     this.key_data.forEach(key => key.update())
 
-    // window.first_dot.find_closest_neighbours()
-    // this.draw_dots()
   }
 
 
   prefill_key_data(){
     this.key_data = []
-    window.key_data = this.key_data
+    // window.key_data = this.key_data
     for(var n=0; n< 127; n++) {
     // for(var n=0; n< 15; n++) {
       this.key_data.push(new KeyDot(n, this))
     }
-    window.first_dot = this.key_data[0]
+    // window.first_dot = this.key_data[0]
   }
-
-  // draw_dots() {
-  //   this.graphics.lineStyle(1, 0x00ffff, 1);
-  //   this.key_data.forEach((key) => { 
-  //     this.graphics.strokeCircle(key.point.x, key.point.y, 4)
-  //   })
-
-  // }
 
   key_down(key) { 
     this.key_data[key].pressed()
