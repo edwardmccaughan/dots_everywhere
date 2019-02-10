@@ -1,35 +1,64 @@
 import { MidiController } from '../midi'
 import { RealKeyboard } from '../real_keyboard'
 
+class Line {
+  constructor(dot_a, dot_b) {
+    this.start_ttl = 350
+    this.dot_a = dot_a
+    this.dot_b = dot_b
+  }
+
+  active(){
+    this.ttl = this.start_ttl
+  }
+
+  update() {
+    if(this.ttl > 0){
+      window.scene.graphics.lineStyle(1, 0xffffff, 1 * (this.ttl / this.start_ttl));
+      window.scene.graphics.beginPath();
+      window.scene.graphics.moveTo(this.dot_a.physics_object.x, this.dot_a.physics_object.y);
+      window.scene.graphics.lineTo(this.dot_b.physics_object.x, this.dot_b.physics_object.y);
+      window.scene.graphics.closePath();
+      window.scene.graphics.strokePath();
+      
+      this.ttl--
+    }
+
+  }
+
+}
+
 class LinesManager {
   constructor() {
     this.lines = {}
-    this.start_ttl = 200
   }
 
   set_line_active(dot_a, dot_b) {
     const keyname = [dot_a.key_number, dot_b.key_number].sort().toString()
 
-    this.lines[keyname] = {
-      dot_a: dot_a,
-      dot_b: dot_b,
-      ttl: this.start_ttl
-    }
+    this.lines[keyname] = new Line(dot_a,dot_b)
+    this.lines[keyname].active()
+    // this.lines[keyname] = {
+    //   dot_a: dot_a,
+    //   dot_b: dot_b,
+    //   ttl: this.start_ttl
+    // }
   }
 
   update() {
     Object.keys(this.lines).forEach((key) => { 
       const line = this.lines[key]
-      if(line.ttl > 0){
-        window.scene.graphics.lineStyle(1, 0xffffff, 1 * (line.ttl / this.start_ttl));
-        window.scene.graphics.beginPath();
-        window.scene.graphics.moveTo(line.dot_a.physics_object.x, line.dot_a.physics_object.y);
-        window.scene.graphics.lineTo(line.dot_b.physics_object.x, line.dot_b.physics_object.y);
-        window.scene.graphics.closePath();
-        window.scene.graphics.strokePath();
+     line.update()
+      // if(line.ttl > 0){
+      //   window.scene.graphics.lineStyle(1, 0xffffff, 1 * (line.ttl / this.start_ttl));
+      //   window.scene.graphics.beginPath();
+      //   window.scene.graphics.moveTo(line.dot_a.physics_object.x, line.dot_a.physics_object.y);
+      //   window.scene.graphics.lineTo(line.dot_b.physics_object.x, line.dot_b.physics_object.y);
+      //   window.scene.graphics.closePath();
+      //   window.scene.graphics.strokePath();
         
-        line.ttl--
-      }
+      //   line.ttl--
+      // }
     })
   }
 
