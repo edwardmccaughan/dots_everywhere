@@ -18,10 +18,7 @@ class Line {
     if(this.fade_out_time == 0) {
       this.fade_in_time = this.fade_in_duration     
     }
-    this.fade_out_time = this.fade_out_duration
-
-
-    
+    this.fade_out_time = this.fade_out_duration   
   }
 
   update() {
@@ -51,7 +48,12 @@ class Line {
     }
 
     if(this.pressed_fadeout_time > 0){
-      window.scene.graphics.lineStyle(1, 0xff0000, 1 * (this.pressed_fadeout_time / this.pressed_fadeout_duration));
+      if(this.dot_a.physics_object.x > this.dot_a.physics_object.x) {
+        window.scene.graphics.lineGradientStyle(1, this.dot_a.color, this.dot_b.color, this.dot_a.color, this.dot_b.color)
+      } else {
+        window.scene.graphics.lineGradientStyle(1, this.dot_b.color, this.dot_a.color, this.dot_b.color, this.dot_a.color)
+      }
+
       window.scene.graphics.beginPath();
       window.scene.graphics.moveTo(this.dot_a.physics_object.x, this.dot_a.physics_object.y);
       window.scene.graphics.lineTo(this.dot_b.physics_object.x, this.dot_b.physics_object.y);
@@ -124,6 +126,9 @@ class Dot {
 
     // something is weird with how the image, the setCircle and the x/y coords work. 
     this.physics_object.setScale(0.1)
+
+    this.color = Phaser.Display.Color.HSLToColor(Math.random(),0.75,0.4).color;
+
   }
 
   update(){
@@ -134,7 +139,7 @@ class Dot {
       // console.log(this.recentness)
     }
     if(this.recentness > 0) {
-      window.scene.graphics.fillStyle(0xff0000, 1);
+      window.scene.graphics.fillStyle(this.color, 1);
     } else {  
       window.scene.graphics.fillStyle(0x444444, 1);
     }
@@ -143,15 +148,12 @@ class Dot {
 
   pressed() {
     this.is_pressed = true
-    this.recentness = 5 //100
-    // console.log('pressed', this.key_number, this.point.x)
+    this.recentness = 5
   }
 
   released() {
     this.is_pressed = false
   }
-
-
 
   distance_to(other_dot){
     return Phaser.Math.Distance.Squared(
