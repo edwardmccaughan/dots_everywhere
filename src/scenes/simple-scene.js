@@ -49,9 +49,9 @@ class Line {
 
     if(this.pressed_fadeout_time > 0){
       if(this.dot_a.physics_object.x > this.dot_a.physics_object.x) {
-        window.scene.graphics.lineGradientStyle(1, this.dot_a.color, this.dot_b.color, this.dot_a.color, this.dot_b.color)
+        window.scene.graphics.lineGradientStyle(3, this.dot_a.color, this.dot_b.color, this.dot_a.color, this.dot_b.color)
       } else {
-        window.scene.graphics.lineGradientStyle(1, this.dot_b.color, this.dot_a.color, this.dot_b.color, this.dot_a.color)
+        window.scene.graphics.lineGradientStyle(3, this.dot_b.color, this.dot_a.color, this.dot_b.color, this.dot_a.color)
       }
 
       window.scene.graphics.beginPath();
@@ -148,7 +148,7 @@ class Dot {
 
   pressed() {
     this.is_pressed = true
-    this.recentness = 5
+    this.recentness = 6
   }
 
   released() {
