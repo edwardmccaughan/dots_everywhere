@@ -89,9 +89,6 @@ class LinesManager {
   }
 
   set_line_active(dot_a, dot_b) {
-    // if(this.lines[keyname] == undefined) {
-    //   this.lines[keyname] = new Line(dot_a,dot_b)
-    // }
     this.lines[this.keyname(dot_a,dot_b)].active()
   }
 
@@ -123,9 +120,10 @@ class Dot {
       0 + (Math.random() - 0.5) * 30,
       0 + (Math.random() - 0.5) * 30
     );
-
     this.physics_object.setVisible(false)
 
+    // something is weird with how the image, the setCircle and the x/y coords work. 
+    this.physics_object.setScale(0.1)
   }
 
   update(){
@@ -135,17 +133,17 @@ class Dot {
       this.recentness--
       // console.log(this.recentness)
     }
-    if(this.is_pressed) {
+    if(this.recentness > 0) {
       window.scene.graphics.fillStyle(0xff0000, 1);
     } else {  
-      window.scene.graphics.fillStyle(0x00ffff, 1);
+      window.scene.graphics.fillStyle(0x444444, 1);
     }
     window.scene.graphics.fillCircle(this.physics_object.x, this.physics_object.y, this.radius)
   }
 
   pressed() {
     this.is_pressed = true
-    this.recentness = 10 //100
+    this.recentness = 5 //100
     // console.log('pressed', this.key_number, this.point.x)
   }
 
@@ -173,9 +171,6 @@ class Dot {
       window.scene.lines_manager.set_line_active(this, dot)
     })
   }
-
-  draw() {
-  }
 }
 
 
@@ -201,19 +196,19 @@ export class SimpleScene extends Phaser.Scene {
   update() {
     this.graphics.clear()
     
+    // TODO: figure out how to have lines and dots never draw on top of eachother :-/
     this.lines_manager.update()
     this.key_data.forEach(key => key.update())
   }
 
 
   prefill_key_data(){
+    const number_of_keys = 127
     this.key_data = []
-    // window.key_data = this.key_data
-    for(var n=0; n< 127; n++) {
-    // for(var n=0; n< 15; n++) {
+    // TODO: I think I only need 88. Although maybe extras look nice
+    for(var n=0; n< number_of_keys; n++) {
       this.key_data.push(new Dot(n, this))
     }
-    // window.first_dot = this.key_data[0]
   }
 
   key_down(key) { 
