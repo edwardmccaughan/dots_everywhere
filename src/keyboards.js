@@ -1,7 +1,6 @@
 import WebMidi from 'webmidi';
 
 export class Keyboards {
-  // todo: string include
   constructor() {}
   find_by_name(name) {
     return WebMidi.inputs.filter((input) =>{ return input.name.includes(name)})

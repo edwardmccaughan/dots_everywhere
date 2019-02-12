@@ -11,12 +11,11 @@ export class MidiController {
       if(err) { console.log(err) }
 
       this.keyboards = new Keyboards()    
-      // this.setup_page_switcher_midi(this.keyboards.keystation_mini())
-      this.setup_interaction_midi(this.keyboards.keystation_mini())
+      
+      this.setup_page_switcher_midi(this.keyboards.keystation_mini())
       this.keyboards.everything_but_mini_keyboards().forEach((keyboard) => {
         this.setup_interaction_midi(keyboard)
       })
-      // this.setup_interaction_midi(this.keyboards.everything_but_mini_keyboards())
     })
   }
 
@@ -29,13 +28,11 @@ export class MidiController {
     console.log("setting up midi keyboard for interaction", keyboard, keyboard.name)
     
     keyboard.addListener('noteon', "all", (e) => {
-      // const key = this.key_to_x(e.data[1])
       console.log("interaction pressed:", e.data[1] )
       this.key_pressed(e.data[1])
     });
 
     keyboard.addListener('noteoff', "all", (e) => {
-      // const key = this.key_to_x(e.data[1])
       console.log("interaction released:", e.data[1] )
       this.key_released(e.data[1])
     });
@@ -65,7 +62,8 @@ export class MidiController {
         55: "voronoi_sparkles",
         57: "walkers",
         59: "waaaaaaves",
-        60: "spiralize"
+        60: "spiralize",
+        62: "dots_everywhere"
     }
 
     var page = pages[key]
